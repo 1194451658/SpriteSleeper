@@ -10,12 +10,17 @@ namespace SpriteSleeper
     {
         // Private variables
         private Canvas _canvas;
+
         private List<SpriteSleeperImage> _spriteSleepers;
+
         private SleepState _currentSleepState = SleepState.Awake;
+
         private SpriteSleeperManager _manager;
+
         private bool _hasCanvas = false;
 
         // The current state of the canvas
+		// 当前的状态
         private enum SleepState
         {
             Sleeping,
@@ -24,6 +29,7 @@ namespace SpriteSleeper
 
         private void Awake()
         {
+			// 获取Canvas
             _canvas = GetComponent<Canvas>();
             if (_canvas == null)
             {
@@ -31,6 +37,7 @@ namespace SpriteSleeper
                 return;
             }
 
+			// 只能挂载在主Canvas上
             if( !_canvas.isRootCanvas )
             {
                 Debug.LogError("SpriteSleeperCanvas should only be used on root canvases.");
@@ -38,6 +45,9 @@ namespace SpriteSleeper
             }
 
             _hasCanvas = true;
+
+			// 创建SpriteSleeperManager
+			// 并加入此Canvas
             _manager = SpriteSleeperManager.Instance();
 
             if (_manager == null || _manager.Equals(null))
@@ -48,10 +58,18 @@ namespace SpriteSleeper
 
             _manager.AddCanvas(this);
 
+			// 创建SpriteSleeperImage列表
             _spriteSleepers = new List<SpriteSleeperImage>();
+
+			// 遍历Canvas下的，所有Image
+			// 在上面挂载SpriteSleeperImage
+			// 保存到_spriteSleepers中
             RefreshImageList();
+			
+			//
 
             // Allow for canvases that start disabled to unref their images
+			// 执行OnCanvasHierarchyChanged函数
             Invoke("OnCanvasHierarchyChanged", 0.0001f);
         }
 
@@ -62,6 +80,9 @@ namespace SpriteSleeper
         }
 
         // Re-find all the images in the hierarchy under this GameObject
+		// 遍历Canvas下的，所有Image
+		// 在上面挂载SpriteSleeperImage
+		// 保存到_spriteSleepers中
         void RefreshImageList()
         {
             _spriteSleepers.Clear();
@@ -80,16 +101,23 @@ namespace SpriteSleeper
             }
         }
 
+		// 根据Canvas状态变化，调用
+		// Wake(), Sleep()函数
+		// 分别调用SpriteSleeperImage的Sleep()函数
         protected void OnCanvasHierarchyChanged()
         {
             if (_hasCanvas)
             {
+				// 根据Canvas，设置SleepState
+				// 如果状态发生了变化
                 SleepState state = (_canvas.isActiveAndEnabled) ? SleepState.Awake : SleepState.Sleeping;
                 if (state != _currentSleepState)
                 {
                     _currentSleepState = state;
+
                     if (state == SleepState.Awake)
                     {
+						//
                         Wake();
                     }
                     else
@@ -108,6 +136,7 @@ namespace SpriteSleeper
             }
         }
 
+		// 调用SpriteSleeperImage的Sleep()函数
         void Sleep()
         {
             foreach (var sleeper in _spriteSleepers)
@@ -116,6 +145,7 @@ namespace SpriteSleeper
             }
         }
 
+		// 调用SpriteSleeperImage的Wake()函数
         void Wake()
         {
             foreach (var sleeper in _spriteSleepers)

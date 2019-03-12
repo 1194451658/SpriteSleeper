@@ -39,11 +39,15 @@ namespace SpriteSleeper
         // Singleton setup
         private static SpriteSleeperManager _instance;
         private static bool _destroyed = false;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+
+		// 创建实例
         public static SpriteSleeperManager Instance()
         {
             if (_instance == null && !_destroyed)
             {
+				// 创建SpriteSleeperManager
                 GameObject spriteSleeperGameObject = new GameObject("SpriteSleeperManager");
                 GameObject.DontDestroyOnLoad(spriteSleeperGameObject);
                 spriteSleeperGameObject.hideFlags = HideFlags.DontSave | HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
@@ -64,6 +68,7 @@ namespace SpriteSleeper
 
         // Private variable for manager state
         private HashSet<SpriteSleeperCanvas> _canvases;
+
         private SpriteAtlasList.AtlasInfo[] _configInfo = null;
         private Dictionary<Texture2D, LoadedAtlasInfo> _textureToInfo;
         private Dictionary<string, LoadedAtlasInfo> _tagToInfo;
@@ -126,6 +131,7 @@ namespace SpriteSleeper
         }
 
         // Called when a canvas is destroyed
+		// 添加到_canvases列表中
         public void RemoveCanvas(SpriteSleeperCanvas canvas)
         {
             _canvases.Remove(canvas);
